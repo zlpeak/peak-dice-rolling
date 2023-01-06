@@ -184,13 +184,18 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   result: {
-    display: "flex",
     fontSize: 28,
     color: "white",
-    justifyContent: "flex-end",
     marginVertical: 5,
   },
-  modAdded: { color: "fuchsia", width: "100%", justifyContent: "center" },
+  modAdded: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "center",
+    color: "fuchsia",
+    width: "100%",
+    textAlign: "center",
+  },
   modIndividual: { color: "fuchsia" },
   tot: { color: "orange", fontSize: 30, fontWeight: "bold" },
   resultIcon: {

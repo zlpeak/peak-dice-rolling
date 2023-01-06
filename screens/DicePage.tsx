@@ -101,7 +101,8 @@ export default function DicePage({ dice }: Props) {
             <Pressable
               onPress={() => {
                 setShouldAddRolls(!shouldAddRolls);
-                if (shouldAddRolls) setDiceCount(maxDiceCountIndividual);
+                if (shouldAddRolls && diceCount > maxDiceCountIndividual)
+                  setDiceCount(maxDiceCountIndividual);
               }}
             >
               <MaterialCommunityIcons

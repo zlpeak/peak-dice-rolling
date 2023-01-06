@@ -27,7 +27,7 @@ export default function ResultDice({
     iconStyles = { ...iconStyles, ...styles.rotate };
 
   return (
-    <View style={styles.view}>
+    <View style={{ ...styles.view }}>
       <MaterialCommunityIcons
         style={iconStyles}
         name={shape}
@@ -46,9 +46,9 @@ export default function ResultDice({
 const styles = StyleSheet.create({
   view: {
     display: "flex",
+    flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    // color: "teal",
   },
   icon: {
     top: 0,
@@ -59,10 +59,6 @@ const styles = StyleSheet.create({
   },
   iconText: {
     position: "absolute",
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
     zIndex: 1,
   },
   rotate: {
