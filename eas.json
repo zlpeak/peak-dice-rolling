@@ -1,0 +1,18 @@
+{
+  "build": {
+    "DiceRoller": {
+      "android": {
+        "buildType": "apk"
+      }
+    },
+    "DiceRoller2": {
+      "android": {
+        "gradleCommand": ":app:assembleRelease"
+      }
+    },
+    "DiceRoller3": {
+      "developmentClient": true
+    },
+    "production": {}
+  }
+}

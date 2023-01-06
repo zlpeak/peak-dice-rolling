@@ -1,13 +1,30 @@
-import { StatusBar } from 'expo-status-bar';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { StatusBar } from "expo-status-bar";
+import { useCallback, useEffect } from "react";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
-import useCachedResources from './hooks/useCachedResources';
-import useColorScheme from './hooks/useColorScheme';
-import Navigation from './navigation';
+import useCachedResources from "./hooks/useCachedResources";
+import useColorScheme from "./hooks/useColorScheme";
+import Navigation from "./navigation";
+import { createTable, deleteTable, getDBConnection } from "./services/database";
 
 export default function App() {
   const isLoadingComplete = useCachedResources();
   const colorScheme = useColorScheme();
+
+  // const InitDBTable = useCallback(async () => {
+  //   try {
+  //     const db = await getDBConnection();
+  //     await createTable(db);
+  //   } catch (error) {
+  //     console.error(error);
+  //     const db = await getDBConnection();
+  //     deleteTable(db);
+  //   }
+  // }, []);
+
+  // useEffect(() => {
+  //   InitDBTable();
+  // }, [InitDBTable]);
 
   if (!isLoadingComplete) {
     return null;
@@ -20,3 +37,4 @@ export default function App() {
     );
   }
 }
+
