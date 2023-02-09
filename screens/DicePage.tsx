@@ -1,11 +1,11 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { useEffect, useState } from "react";
-import { Pressable, StyleSheet } from "react-native";
+import { useState } from "react";
+import { Pressable, ScrollView, StyleSheet } from "react-native";
+import DiceHistory from "../components/DiceHistory";
 import { displayDiceCount, displayDiceResults, rollDice, RollResult } from "../components/DiceRoll";
 import Modifier from "../components/Modifier";
-
+import { Separator } from "../components/Separator";
 import { Text, View } from "../components/Themed";
-import { getDBConnection, getDiceRolls } from "../services/database";
 import { Dice } from "../types";
 
 type Props = {
@@ -27,6 +27,7 @@ export default function DicePage({ dice }: Props) {
   const [diceResults, setDiceResults] = useState<RollResult | undefined>(undefined);
 
   const [showHistory, setShowHistory] = useState<boolean>(false);
+  const [showGraph, setShowGraph] = useState<boolean>(true);
   const [shouldAddRolls, setShouldAddRolls] = useState<boolean>(
     // true
     Boolean(dice.displayType === "add")
@@ -46,10 +47,6 @@ export default function DicePage({ dice }: Props) {
     setDiceResults(undefined);
     setModifier(0);
     setShouldAddRolls(Boolean(dice.displayType === "add"));
-  };
-
-  const getTitle = (diceName: string) => {
-    return `Rolling: ${diceName.toUpperCase()}${diceCount > 1 ? "s" : ""}`;
   };
 
   const determineMax = () => {
@@ -81,7 +78,7 @@ export default function DicePage({ dice }: Props) {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        {/* <View style={styles.toggle}>
+        <View style={styles.toggle}>
           <Text style={styles.toggle}>Roll</Text>
           <Pressable
             onPress={() => {
@@ -94,8 +91,8 @@ export default function DicePage({ dice }: Props) {
               color={"white"}
             />
           </Pressable>
-          <Text style={styles.toggle}>Graph</Text>
-        </View> */}
+          <Text style={styles.toggle}>History</Text>
+        </View>
         {!showHistory && (
           <View style={styles.toggle}>
             <Pressable
@@ -114,7 +111,7 @@ export default function DicePage({ dice }: Props) {
             <Text style={styles.toggle}>Add Dice</Text>
           </View>
         )}
-        {!showHistory && (
+        {!showHistory ? (
           <Pressable
             onPress={() => {
               resetState();
@@ -122,22 +119,39 @@ export default function DicePage({ dice }: Props) {
           >
             <MaterialCommunityIcons name="refresh" size={headerButtonSize} color={"white"} />
           </Pressable>
+        ) : (
+          <View style={styles.toggle}>
+            <Text style={styles.toggle}>List</Text>
+            <Pressable
+              onPress={() => {
+                setShowGraph(!showGraph);
+              }}
+            >
+              <MaterialCommunityIcons
+                name={showGraph ? "toggle-switch-outline" : "toggle-switch-off-outline"}
+                size={headerButtonSize}
+                color={"white"}
+              />
+            </Pressable>
+            <Text style={styles.toggle}>Graph</Text>
+          </View>
         )}
       </View>
       <Separator />
 
       {showHistory ? (
         <View style={styles.container}>
-          <Text style={styles.title}>{`${dice.diceName} Graph`}</Text>
-          <Separator />
+          {
+            <DiceHistory
+              dice={dice}
+              showGraph={showGraph}
+              setShowGraph={async (showGraph: boolean) => setShowGraph(showGraph)}
+            />
+          }
         </View>
       ) : (
         <>
-          {/* ANIMATION TESTING */}
-          {/* <View>
-            <MaterialCommunityIcons name={animationName} size={buttonSize} color={"orange"} />
-          </View> */}
-          <View style={styles.rollContainer}>
+          <ScrollView contentContainerStyle={styles.rollContainer}>
             {diceResults
               ? displayDiceResults({
                   dice: dice,
@@ -146,7 +160,7 @@ export default function DicePage({ dice }: Props) {
                   shape: dice.rollIconName,
                 })
               : displayDiceCount(dice, diceCount, dice.rollIconName, shouldAddRolls)}
-          </View>
+          </ScrollView>
           <View style={styles.mainButtonContainer}>
             <Pressable
               disabled={diceCount === minDiceCount}
@@ -174,8 +188,6 @@ export default function DicePage({ dice }: Props) {
                   style={styles.buttons}
                 />
               </Pressable>
-              {/* TEXT DISPLAY FOR DICE COUNT */}
-              {/* <Text style={styles.diceCount}>{`x${diceCount}`}</Text> */}
             </View>
             <Pressable
               disabled={determineMax()}
@@ -204,16 +216,11 @@ export default function DicePage({ dice }: Props) {
   );
 }
 
-export function Separator() {
-  return <View style={styles.separator} lightColor="teal" darkColor="teal" />;
-}
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     display: "flex",
     alignItems: "center",
-    marginTop: "10%",
   },
   rollContainer: {
     flex: 1,
@@ -221,7 +228,6 @@ const styles = StyleSheet.create({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    overflow: "scroll",
   },
   title: {
     marginTop: 10,
@@ -230,11 +236,6 @@ const styles = StyleSheet.create({
   },
   result: {
     fontSize: 30,
-  },
-  separator: {
-    marginVertical: 10,
-    height: 3,
-    width: "80%",
   },
   mainButtonContainer: {
     display: "flex",
@@ -249,13 +250,15 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    marginTop: "10%",
   },
   toggle: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
+    marginTop: 5,
     marginHorizontal: 3,
-    fontSize: 18,
+    fontSize: 15,
   },
   buttons: {
     display: "flex",
