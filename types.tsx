@@ -124,6 +124,11 @@ export type RootTabParamList = {
   NotFound: undefined;
 };
 
+export type RollNumberCount = {
+  rollNumber: string;
+  rollCount: number;
+};
+
 export type RootTabScreenProps<Screen extends keyof RootTabParamList> = CompositeScreenProps<
   BottomTabScreenProps<RootTabParamList, Screen>,
   NativeStackScreenProps<RootStackParamList>

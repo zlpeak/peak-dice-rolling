@@ -11,20 +11,18 @@ export default function App() {
   const isLoadingComplete = useCachedResources();
   const colorScheme = useColorScheme();
 
-  // const InitDBTable = useCallback(async () => {
-  //   try {
-  //     const db = await getDBConnection();
-  //     await createTable(db);
-  //   } catch (error) {
-  //     console.error(error);
-  //     const db = await getDBConnection();
-  //     deleteTable(db);
-  //   }
-  // }, []);
+  const InitDBTable = useCallback(async () => {
+    try {
+      const db = await getDBConnection();
+      await createTable(db);
+    } catch (error) {
+      console.error(error);
+    }
+  }, []);
 
-  // useEffect(() => {
-  //   InitDBTable();
-  // }, [InitDBTable]);
+  useEffect(() => {
+    InitDBTable();
+  }, [InitDBTable]);
 
   if (!isLoadingComplete) {
     return null;

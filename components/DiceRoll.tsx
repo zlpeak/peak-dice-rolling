@@ -3,9 +3,9 @@ import { StyleSheet, Text } from "react-native";
 import { getDBConnection, getDiceRolls, saveDiceRolls } from "../services/database";
 import { Dice, RollDiceIcons } from "../types";
 import { View } from "./Themed";
-import { Separator } from "../screens/DicePage";
 import ResultDice from "./ResultDice";
 import uuid from "react-native-uuid";
+import { Separator } from "./Separator";
 
 export type RollResult = {
   date: string;
@@ -37,12 +37,12 @@ export const rollDice = async (diceCount: number, dice: Dice, modifier: number) 
     total: total,
   };
 
-  // try {
-  //   const db = await getDBConnection();
-  //   await saveDiceRolls(db, diceResults);
-  // } catch (error) {
-  //   console.error(error);
-  // }
+  try {
+    const db = await getDBConnection();
+    await saveDiceRolls(db, diceResults);
+  } catch (error) {
+    console.error(error);
+  }
 
   return diceResults;
 };
@@ -220,7 +220,6 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
     flexWrap: "wrap",
     width: "70%",
   },
