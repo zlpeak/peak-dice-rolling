@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Peak Dice Rolling",
-    "slug": "DiceRoller",
+    "name": "Peak Dice Rolling - Attack Wing",
+    "slug": "attackwingdiceroller",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -15,27 +15,26 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.zlpeak18.DiceRoller"
+      "bundleIdentifier": "com.zlpeak18.AttackWingDiceRoller"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.zlpeak18.DiceRoller"
+      "package": "com.zlpeak18.AttackWingDiceRoller"
     },
     "web": {
       "favicon": "./assets/images/favicon.png"
     },
     "extra": {
       "eas": {
-        "projectId": "10afdf7f-2aed-472b-b16a-c743abc6bdaa"
+        "projectId": "474f4758-6fe7-4d8b-8389-414026ed3ba5"
       }
     }
   }
 }
+

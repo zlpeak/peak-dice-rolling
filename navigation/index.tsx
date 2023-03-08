@@ -52,10 +52,12 @@ const BottomTab = createBottomTabNavigator<RootTabParamList>();
 
 function BottomTabNavigator() {
   const colorScheme = useColorScheme();
+  const [showHistory, setShowHistory] = React.useState<boolean>(false);
+  const [refresh, setRefresh] = React.useState<boolean>(false);
 
   return (
     <BottomTab.Navigator
-      initialRouteName="d20"
+      initialRouteName="Attack"
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme].tint,
       }}
@@ -65,9 +67,17 @@ function BottomTabNavigator() {
           <BottomTab.Screen
             key={`nav_${index}`}
             name={dice.diceName}
-            children={() => <DicePage dice={dice} />}
+            children={() => (
+              <DicePage
+                dice={dice}
+                showHistory={showHistory}
+                setShowHistory={async (showGraph: boolean) => setShowHistory(showGraph)}
+                refresh={refresh}
+                setRefresh={async () => setRefresh(!refresh)}
+              />
+            )}
             options={() => ({
-              tabBarIcon: ({ color }) => <TabBarIcon name={dice.iconName} color={color} />,
+              tabBarIcon: ({ color }) => <TabBarIcon name={dice.navIconName} color={color} />,
               title: dice.diceName,
               headerShown: false,
             })}

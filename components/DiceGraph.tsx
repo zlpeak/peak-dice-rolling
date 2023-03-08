@@ -2,7 +2,7 @@ import React from "react";
 import { StyleSheet, View } from "react-native";
 import { Defs, LinearGradient, Stop } from "react-native-svg";
 import { BarChart, Grid, YAxis } from "react-native-svg-charts";
-import { Dice, RollNumberCount } from "../types";
+import { attackMap, defendMap, Dice, RollNumberCount, RootTabParamList } from "../types";
 import * as scale from "d3-scale";
 import { Text } from "./Themed";
 
@@ -10,10 +10,13 @@ type Props = {
   dice: Dice;
   rollNumberCount: RollNumberCount[];
   totalRolled: number;
+  action: keyof RootTabParamList;
 };
 
-export default function DiceGraph({ dice, rollNumberCount, totalRolled }: Props) {
-  const data = dice.diceName == "d100" ? getBatchedData(rollNumberCount) : rollNumberCount;
+export default function DiceGraph({ dice, rollNumberCount, totalRolled, action }: Props) {
+  const data = rollNumberCount;
+  const mapping = action === "Attack" ? attackMap : defendMap;
+  const isAI = action === "AI" ? true : false;
 
   return (
     <View style={styles.graphContainer}>
@@ -33,7 +36,9 @@ export default function DiceGraph({ dice, rollNumberCount, totalRolled }: Props)
           scale={scale.scaleBand}
           contentInset={{ top: 10, bottom: 10 }}
           spacingInner={0.3}
-          formatLabel={(_, index) => data[index].rollNumber}
+          formatLabel={(_, index) =>
+            isAI ? data[index].rollNumber : mapping[parseInt(data[index].rollNumber)].name
+          }
         />
         <BarChart
           style={{ flex: 1, marginLeft: 10 }}

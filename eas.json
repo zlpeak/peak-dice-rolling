@@ -1,16 +1,16 @@
 {
   "build": {
-    "DiceRoller": {
+    "AttackWingDiceRoller": {
       "android": {
         "buildType": "apk"
       }
     },
-    "DiceRoller2": {
+    "AttackWingDiceRoller2": {
       "android": {
         "gradleCommand": ":app:assembleRelease"
       }
     },
-    "DiceRoller3": {
+    "AttackWingDiceRoller3": {
       "developmentClient": true
     },
     "production": {}

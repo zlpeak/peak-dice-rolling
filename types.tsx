@@ -24,17 +24,7 @@ export type RootStackScreenProps<Screen extends keyof RootStackParamList> = Nati
   Screen
 >;
 
-export type DisplayType = "add" | "individual";
-
-export type DiceIcons =
-  | "dice-d20-outline"
-  | "dice-d12-outline"
-  | "dice-d10-outline"
-  | "dice-d8-outline"
-  | "dice-d6-outline"
-  | "dice-d4-outline"
-  | "numeric-2-circle-outline"
-  | "ticket-percent-outline";
+export type DiceIcons = "dice-d8-outline" | "dice-d6-outline" | "dice-d4-outline" | "octahedron";
 
 export type RollDiceIcons =
   | "hexagon-outline"
@@ -43,84 +33,85 @@ export type RollDiceIcons =
   | "triangle-outline"
   | "cards-diamond-outline"
   | "pentagon-outline"
-  | "hexagon-multiple-outline";
+  | "hexagon-multiple-outline"
+  | "octagon-outline";
+
+export type NavIcons = "shield-outline" | "sword" | "klingon";
 
 export type Dice = {
   diceNum: number;
   diceName: keyof RootTabParamList;
-  displayType: DisplayType;
+  defaultDiceCount: number;
   iconName: DiceIcons;
+  navIconName: NavIcons;
   rollIconName: RollDiceIcons;
 };
 
 export const diceList: Dice[] = [
   {
-    diceNum: 2,
-    diceName: "d2",
-    displayType: "add",
-    iconName: "numeric-2-circle-outline",
-    rollIconName: "checkbox-blank-circle-outline",
-  },
-  {
-    diceNum: 4,
-    diceName: "d4",
-    displayType: "add",
-    iconName: "dice-d4-outline",
-    rollIconName: "triangle-outline",
-  },
-  {
-    diceNum: 6,
-    diceName: "d6",
-    displayType: "add",
-    iconName: "dice-d6-outline",
-    rollIconName: "square-outline",
+    diceNum: 8,
+    diceName: "Attack",
+    iconName: "octahedron",
+    defaultDiceCount: 4,
+    navIconName: "sword",
+    rollIconName: "octagon-outline",
   },
   {
     diceNum: 8,
-    diceName: "d8",
-    displayType: "add",
-    iconName: "dice-d8-outline",
+    diceName: "Defend",
+    iconName: "octahedron",
+    defaultDiceCount: 4,
+    navIconName: "shield-outline",
+    rollIconName: "octagon-outline",
+  },
+  {
+    diceNum: 6,
+    diceName: "AI",
+    iconName: "dice-d6-outline",
+    defaultDiceCount: 1,
+    navIconName: "klingon",
     rollIconName: "square-outline",
-  },
-  {
-    diceNum: 10,
-    diceName: "d10",
-    displayType: "add",
-    iconName: "dice-d10-outline",
-    rollIconName: "square-outline",
-  },
-  {
-    diceNum: 12,
-    diceName: "d12",
-    displayType: "add",
-    iconName: "dice-d12-outline",
-    rollIconName: "pentagon-outline",
-  },
-  {
-    diceNum: 20,
-    diceName: "d20",
-    displayType: "individual",
-    iconName: "dice-d20-outline",
-    rollIconName: "hexagon-outline",
-  },
-  {
-    diceNum: 100,
-    diceName: "d100",
-    displayType: "individual",
-    iconName: "ticket-percent-outline",
-    rollIconName: "hexagon-outline",
   },
 ];
 
+export type DiceMapIcons =
+  | "alert-octagram-outline"
+  | "octagram-outline"
+  | "sine-wave"
+  | "radioactive-circle-outline"
+  | "klingon"
+  | "star-four-points"
+  | "star-four-points-outline"
+  | "target"
+  | "octagon-outline"
+  | "checkbox-blank-circle-outline";
+
+export const attackMap: { [key: number]: { icon: DiceMapIcons; name: string } } = {
+  1: { icon: "star-four-points-outline", name: "Hit" },
+  2: { icon: "star-four-points-outline", name: "Hit" },
+  3: { icon: "star-four-points-outline", name: "Hit" },
+  4: { icon: "alert-octagram-outline", name: "Crit" },
+  5: { icon: "target", name: "Station" },
+  6: { icon: "target", name: "Station" },
+  7: { icon: "checkbox-blank-circle-outline", name: "Blank" },
+  8: { icon: "checkbox-blank-circle-outline", name: "Blank" },
+};
+
+export const defendMap: { [key: number]: { icon: DiceMapIcons; name: string } } = {
+  1: { icon: "sine-wave", name: "Evade" },
+  2: { icon: "sine-wave", name: "Evade" },
+  3: { icon: "sine-wave", name: "Evade" },
+  4: { icon: "target", name: "Station" },
+  5: { icon: "target", name: "Station" },
+  6: { icon: "checkbox-blank-circle-outline", name: "Blank" },
+  7: { icon: "checkbox-blank-circle-outline", name: "Blank" },
+  8: { icon: "checkbox-blank-circle-outline", name: "Blank" },
+};
+
 export type RootTabParamList = {
-  d20: undefined;
-  d12: undefined;
-  d10: undefined;
-  d8: undefined;
-  d6: undefined;
-  d4: undefined;
-  d2: undefined;
-  d100: undefined;
+  Attack: undefined;
+  Defend: undefined;
+  AI: undefined;
   NotFound: undefined;
 };
 

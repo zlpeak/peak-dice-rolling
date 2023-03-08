@@ -1,6 +1,6 @@
 {
-  "name": "diceroller",
-  "version": "1.1.0",
+  "name": "attack-wing-dice-roller",
+  "version": "1.0.0",
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
     "start": "expo start",
@@ -8,8 +8,8 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "test": "jest --watchAll",
-    "buildAPK": "npx eas build -p android --profile DiceRoller",
-    "buildIOS": "npx eas build -p ios --profile DiceRoller"
+    "buildAPK": "npx eas build -p android --profile AttackWingDiceRoller",
+    "buildIOS": "npx eas build -p ios --profile AttackWingDiceRoller"
   },
   "jest": {
     "preset": "jest-expo"

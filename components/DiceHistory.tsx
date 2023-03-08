@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { ScrollView, StyleSheet } from "react-native";
 import { getDBConnection, getDiceRolls } from "../services/database";
-import type { Dice, RollNumberCount } from "../types";
+import { attackMap, defendMap, Dice, RollNumberCount, RootTabParamList } from "../types";
 import { RollResult } from "./DiceRoll";
 import { Text, View } from "./Themed";
 import uuid from "react-native-uuid";
@@ -10,14 +10,13 @@ import DiceGraph from "./DiceGraph";
 type Props = {
   dice: Dice;
   showGraph: boolean;
-  setShowGraph: (showGraph: boolean) => {};
+  action: keyof RootTabParamList;
 };
 
-export default function DiceHistory({ dice, showGraph, setShowGraph }: Props) {
+export default function DiceHistory({ dice, showGraph, action }: Props) {
   const [diceRollHistory, setDiceRollHistory] = useState<RollResult[]>([]);
   const [diceRolls, setDiceRolls] = useState<RollNumberCount[]>([]);
   const [totalRolled, setTotalRolled] = useState<number>(0);
-
   const getRolls = async () => {
     getDBConnection().then(async (db) => {
       setDiceRollHistory(await getDiceRolls(db, dice.diceName.toString()));
@@ -29,6 +28,9 @@ export default function DiceHistory({ dice, showGraph, setShowGraph }: Props) {
   }, []);
 
   React.useEffect(() => {
+    const mapping = action === "Attack" ? attackMap : defendMap;
+    const isAI = action === "AI" ? true : false;
+
     let rollCountArray: RollNumberCount[] = [];
     let i = 1;
     while (i <= dice.diceNum) {
@@ -38,18 +40,24 @@ export default function DiceHistory({ dice, showGraph, setShowGraph }: Props) {
 
     diceRollHistory
       .filter((roll) => roll.diceType.diceName === dice.diceName)
-      .map((roll) => roll.rolls)
+      .map((roll) =>
+        roll.rolls.map((roll) => {
+          return { roll: roll, group: isAI ? roll : mapping[roll] };
+        })
+      )
       .flat()
       .forEach((roll) => {
-        rollCountArray[roll - 1].rollCount += 1 || 0;
+        rollCountArray[roll.roll - 1].rollCount += 1 || 0;
       });
+
+    console.log("diceRollHistory: ", diceRollHistory);
 
     setDiceRolls(rollCountArray);
     setTotalRolled(rollCountArray.reduce((sum, roll) => sum + roll.rollCount, 0));
   }, [diceRollHistory, dice]);
 
   return showGraph ? (
-    <DiceGraph dice={dice} rollNumberCount={diceRolls} totalRolled={totalRolled} />
+    <DiceGraph dice={dice} action={action} rollNumberCount={diceRolls} totalRolled={totalRolled} />
   ) : (
     <ScrollView contentContainerStyle={styles.container}>
       {diceRolls.map((roll: RollNumberCount) => (

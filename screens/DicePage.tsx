@@ -1,85 +1,59 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Pressable, ScrollView, StyleSheet } from "react-native";
 import DiceHistory from "../components/DiceHistory";
 import { displayDiceCount, displayDiceResults, rollDice, RollResult } from "../components/DiceRoll";
-import Modifier from "../components/Modifier";
 import { Separator } from "../components/Separator";
 import { Text, View } from "../components/Themed";
 import { Dice } from "../types";
+import BadgeEmblem from "../components/BadgeEmblem";
 
 type Props = {
   dice: Dice;
+  showHistory: boolean;
+  setShowHistory: (showHistory: boolean) => {};
+  refresh: boolean;
+  setRefresh: () => {};
 };
 
-type AnimationName =
-  | "hexagon-outline"
-  | "hexagon-slice-1"
-  | "hexagon-slice-2"
-  | "hexagon-slice-3"
-  | "hexagon-slice-4"
-  | "hexagon-slice-5"
-  | "hexagon-slice-6";
-
-export default function DicePage({ dice }: Props) {
-  const [diceCount, setDiceCount] = useState<number>(1);
-  const [modifier, setModifier] = useState<number>(0);
+export default function DicePage({
+  dice,
+  showHistory,
+  setShowHistory,
+  refresh,
+  setRefresh,
+}: Props) {
+  const [diceCount, setDiceCount] = useState<number>(dice.defaultDiceCount);
   const [diceResults, setDiceResults] = useState<RollResult | undefined>(undefined);
 
-  const [showHistory, setShowHistory] = useState<boolean>(false);
   const [showGraph, setShowGraph] = useState<boolean>(true);
-  const [shouldAddRolls, setShouldAddRolls] = useState<boolean>(
-    // true
-    Boolean(dice.displayType === "add")
-  );
-
-  const [animationName, setAnimationName] = useState<AnimationName>("hexagon-outline");
 
   const buttonSize = 60;
+  const submitButtonSize = 120;
   const headerButtonSize = 30;
 
   const minDiceCount = 1;
-  const maxDiceCountIndividual = 9;
-  const maxDiceCountAdded = 25;
+  const maxDiceCountIndividual = 20;
 
   const resetState = () => {
-    setDiceCount(1);
+    setRefresh();
+  };
+
+  const determineMax = (): boolean => {
+    return diceCount === maxDiceCountIndividual;
+  };
+
+  useEffect(() => {
+    setDiceCount(dice.defaultDiceCount);
     setDiceResults(undefined);
-    setModifier(0);
-    setShouldAddRolls(Boolean(dice.displayType === "add"));
-  };
-
-  const determineMax = () => {
-    return (
-      (!shouldAddRolls && diceCount === maxDiceCountIndividual) || diceCount === maxDiceCountAdded
-    );
-  };
-
-  const animateGo = (y: number) => {
-    const roll = y;
-
-    if (roll === 1) {
-      setAnimationName("hexagon-slice-1");
-    } else if (roll === 2) {
-      setAnimationName("hexagon-slice-2");
-    } else if (roll === 3) {
-      setAnimationName("hexagon-slice-3");
-    } else if (roll === 4) {
-      setAnimationName("hexagon-slice-4");
-    } else if (roll === 5) {
-      setAnimationName("hexagon-slice-5");
-    } else if (roll === 6) {
-      setAnimationName("hexagon-slice-6");
-    } else {
-      setAnimationName("hexagon-outline");
-    }
-  };
+    setShowGraph(true);
+  }, [refresh]);
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.toggle}>
-          <Text style={styles.toggle}>Roll</Text>
+          <Text style={styles.toggle}>Roll Dice</Text>
           <Pressable
             onPress={() => {
               setShowHistory(!showHistory);
@@ -91,26 +65,8 @@ export default function DicePage({ dice }: Props) {
               color={"white"}
             />
           </Pressable>
-          <Text style={styles.toggle}>History</Text>
+          <Text style={styles.toggle}>See Stats</Text>
         </View>
-        {!showHistory && (
-          <View style={styles.toggle}>
-            <Pressable
-              onPress={() => {
-                setShouldAddRolls(!shouldAddRolls);
-                if (shouldAddRolls && diceCount > maxDiceCountIndividual)
-                  setDiceCount(maxDiceCountIndividual);
-              }}
-            >
-              <MaterialCommunityIcons
-                name={shouldAddRolls ? "checkbox-outline" : "checkbox-blank-outline"}
-                size={headerButtonSize}
-                color={"white"}
-              />
-            </Pressable>
-            <Text style={styles.toggle}>Add Dice</Text>
-          </View>
-        )}
         {!showHistory ? (
           <Pressable
             onPress={() => {
@@ -141,13 +97,7 @@ export default function DicePage({ dice }: Props) {
 
       {showHistory ? (
         <View style={styles.container}>
-          {
-            <DiceHistory
-              dice={dice}
-              showGraph={showGraph}
-              setShowGraph={async (showGraph: boolean) => setShowGraph(showGraph)}
-            />
-          }
+          {<DiceHistory dice={dice} showGraph={showGraph} action={dice.diceName} />}
         </View>
       ) : (
         <>
@@ -155,11 +105,11 @@ export default function DicePage({ dice }: Props) {
             {diceResults
               ? displayDiceResults({
                   dice: dice,
+                  action: dice.diceName,
                   rollResults: diceResults,
-                  shouldAddRolls: shouldAddRolls,
                   shape: dice.rollIconName,
                 })
-              : displayDiceCount(dice, diceCount, dice.rollIconName, shouldAddRolls)}
+              : displayDiceCount(dice, diceCount, dice.rollIconName)}
           </ScrollView>
           <View style={styles.mainButtonContainer}>
             <Pressable
@@ -172,21 +122,30 @@ export default function DicePage({ dice }: Props) {
               <MaterialCommunityIcons
                 name="minus-box-outline"
                 size={buttonSize}
-                color={diceCount === minDiceCount ? "gray" : "maroon"}
+                color={diceCount === minDiceCount ? "gray" : "red"}
               />
             </Pressable>
             <View style={styles.diceCountDisplay}>
               <Pressable
                 onPress={async () => {
-                  setDiceResults(await rollDice(diceCount, dice, modifier));
+                  setDiceResults(await rollDice(diceCount, dice));
                 }}
               >
-                <MaterialCommunityIcons
-                  name={dice.iconName}
-                  size={120}
-                  color={"teal"}
-                  style={styles.buttons}
-                />
+                {dice.diceName == "AI" ? (
+                  <MaterialCommunityIcons
+                    name={dice.navIconName}
+                    size={submitButtonSize}
+                    color={"teal"}
+                    style={styles.buttons}
+                  />
+                ) : (
+                  <BadgeEmblem
+                    fill="teal"
+                    width={submitButtonSize}
+                    height={submitButtonSize}
+                    style={styles.buttons}
+                  />
+                )}
               </Pressable>
             </View>
             <Pressable
@@ -203,13 +162,6 @@ export default function DicePage({ dice }: Props) {
               />
             </Pressable>
           </View>
-          <Modifier
-            modifier={modifier}
-            setModifier={async (mod) => setModifier(mod)}
-            clearDiceResults={async (val) => {
-              setDiceResults(val);
-            }}
-          />
         </>
       )}
     </View>
@@ -223,11 +175,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   rollContainer: {
-    flex: 1,
+    height: "100%",
     width: "100%",
     display: "flex",
+    flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
+    // justifyContent: "center",
   },
   title: {
     marginTop: 10,
@@ -240,7 +193,7 @@ const styles = StyleSheet.create({
   mainButtonContainer: {
     display: "flex",
     flexDirection: "row",
-    alignItems: "flex-end",
+    alignItems: "center",
     width: "80%",
     justifyContent: "space-between",
     marginBottom: 10,

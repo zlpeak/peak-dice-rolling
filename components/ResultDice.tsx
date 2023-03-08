@@ -1,10 +1,11 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { StyleSheet } from "react-native";
-import { Dice, RollDiceIcons } from "../types";
+import { attackMap, defendMap, Dice, RollDiceIcons, RootTabParamList } from "../types";
 import { Text, View } from "./Themed";
 
 type Props = {
   dice: Dice;
+  action: keyof RootTabParamList;
   rollNumber: number;
   shape: RollDiceIcons;
   iconColor?: string;
@@ -15,30 +16,44 @@ type Props = {
 
 export default function ResultDice({
   dice,
-  rollNumber,
   shape,
+  action,
+  rollNumber,
   iconColor = "teal",
-  textColor = "aqua",
-  iconSize = 50,
-  fontSize = 20,
+  iconSize = 80,
+  fontSize = 40,
 }: Props) {
-  let iconStyles = { ...styles.view, ...styles.icon };
-  if (dice.diceName === "d10" || dice.diceName === "d8")
-    iconStyles = { ...iconStyles, ...styles.rotate };
+  const iconStyles = { ...styles.view, ...styles.icon };
+
+  const mapping = action === "Attack" ? attackMap : defendMap;
 
   return (
     <View style={{ ...styles.view }}>
       <MaterialCommunityIcons
         style={iconStyles}
         name={shape}
-        color={iconColor}
+        color={dice.diceName == "AI" ? "teal" : iconColor}
         size={iconSize}
       ></MaterialCommunityIcons>
-      <Text
-        style={{ ...styles.view, ...styles.iconText, ...{ color: textColor, fontSize: fontSize } }}
-      >
-        {rollNumber}
-      </Text>
+      {Boolean(mapping[rollNumber] && mapping[rollNumber].icon) &&
+        (dice.diceName == "AI" ? (
+          <Text
+            style={{
+              ...styles.view,
+              ...styles.iconText,
+              ...{ color: "white", fontSize: fontSize },
+            }}
+          >
+            {rollNumber}
+          </Text>
+        ) : (
+          <MaterialCommunityIcons
+            style={{ ...styles.view, ...styles.iconText }}
+            name={mapping[rollNumber].icon || "circle-outline"}
+            size={fontSize}
+            color="white"
+          />
+        ))}
     </View>
   );
 }
@@ -46,7 +61,7 @@ export default function ResultDice({
 const styles = StyleSheet.create({
   view: {
     display: "flex",
-    flexDirection: "row",
+    flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -60,8 +75,5 @@ const styles = StyleSheet.create({
   iconText: {
     position: "absolute",
     zIndex: 1,
-  },
-  rotate: {
-    transform: [{ rotate: "45deg" }, { scale: 0.8 }],
   },
 });
